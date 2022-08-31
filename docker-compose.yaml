@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  server:
+    image: api
+    build:
+      context: .
+      dockerfile: build/Dockerfile
+    volumes:
+      - /tmp/app:/var/log/app
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: local
+      AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+      AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+      REGION: eu-est-1
+    depends_on:
+      - db
+  db:
+    image: amazon/dynamodb-local
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
+    environment:
+      POSTGRES_USER: "postgres"
+    ports:
+      - 8000:8000
+    volumes:
+      - db-data:/data
+  db-provisioner:
+    image: amazon/aws-cli
+    command: >
+      dynamodb create-table \
+        --table-name Music \
+        --attribute-definitions AttributeName=Id,AttributeType=S AttributeName=Data,AttributeType=S \
+        --key-schema \
+          AttributeName=Id,KeyType=HASH \
+          AttributeName=Data,KeyType=RANGE \
+        --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+        --table-class STANDARD \
+        --endpoint-url http://db:8000
+    environment:
+      AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+      AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+      REGION: eu-est-1
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+    

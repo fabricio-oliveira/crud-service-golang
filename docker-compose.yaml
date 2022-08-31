@@ -31,10 +31,11 @@ services:
     entrypoint: >
       bash -c 'aws dynamodb create-table \
         --endpoint-url http://db:8000/ \
-        --table-name Music \
-        --table-class STANDARD \
-        --attribute-definitions AttributeName=Id,AttributeType=S AttributeName=Data,AttributeType=S \
-        --key-schema AttributeName=Id,KeyType=HASH AttributeName=Data,KeyType=RANGE \
+        --table-name feed \
+        --table-class INVOICE \
+        --key-schema AttributeName=Id,KeyType=HASH AttributeName=date,KeyType=RANGE \
+        --attribute-definitions AttributeName=Id,AttributeType=S AttributeName=date,AttributeType=S \
+        --billing-mode=PROVISIONED \
         --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
         --region us-east-1 '
     environment:

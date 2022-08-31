@@ -6,8 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Get(c *gin.Context) {
+func get(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"healthech": "OK"})
 }
 
-var GET_PATH = "/healthcheck"
+func Routes(router *gin.Engine) {
+	router.GET("/healthcheck", get)
+}

@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/fabricio-oliveira/crud-service-golang/internal/healthcheck"
+	"github.com/fabricio-oliveira/crud-service-golang/internal/invoice"
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 )
@@ -16,7 +17,11 @@ func Routes() *gin.Engine {
 	prometheus := ginprometheus.NewPrometheus("gin")
 	prometheus.Use(router)
 
-	router.GET(healthcheck.PATH, healthcheck.Get)
+	// healthcheck
+	router.GET(healthcheck.GET_PATH, healthcheck.Get)
+
+	//invoice
+	router.GET(invoice.GET_PATH, invoice.Get)
 
 	return router
 }

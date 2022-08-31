@@ -10,4 +10,4 @@ func Get(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"healthech": "OK"})
 }
 
-var PATH = "/healthcheck"
+var GET_PATH = "/healthcheck"

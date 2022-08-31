@@ -1,7 +1,6 @@
 version: '3.8'
 services:
-  server:
-    image: api
+  api:
     build:
       context: .
       dockerfile: build/Dockerfile
@@ -16,34 +15,40 @@ services:
       REGION: eu-est-1
     depends_on:
       - db
+    networks:
+      - crud-service
   db:
-    image: amazon/dynamodb-local
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
-    environment:
-      POSTGRES_USER: "postgres"
+    image: amazon/dynamodb-local:latest
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
     ports:
       - 8000:8000
     volumes:
-      - db-data:/data
+      - db-data:/home/dynamodblocal/data
+    networks:
+      - crud-service
   db-provisioner:
     image: amazon/aws-cli
-    command: >
-      dynamodb create-table \
+    entrypoint: >
+      bash -c 'aws dynamodb create-table \
+        --endpoint-url http://db:8000/ \
         --table-name Music \
-        --attribute-definitions AttributeName=Id,AttributeType=S AttributeName=Data,AttributeType=S \
-        --key-schema \
-          AttributeName=Id,KeyType=HASH \
-          AttributeName=Data,KeyType=RANGE \
-        --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
         --table-class STANDARD \
-        --endpoint-url http://db:8000
+        --attribute-definitions AttributeName=Id,AttributeType=S AttributeName=Data,AttributeType=S \
+        --key-schema AttributeName=Id,KeyType=HASH AttributeName=Data,KeyType=RANGE \
+        --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+        --region us-east-1 '
     environment:
       AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
       AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
       REGION: eu-est-1
     depends_on:
       - db
+    networks:
+      - crud-service
 
 volumes:
   db-data:
+
+networks:
+  crud-service:
     

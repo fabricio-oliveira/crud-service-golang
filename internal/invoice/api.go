@@ -40,6 +40,7 @@ func put(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": id})
 }
 
+// Routes map invoices routes
 func Routes(router *gin.Engine) {
 	router.GET("/invoices", getAll)
 	router.POST("/invoices", create)

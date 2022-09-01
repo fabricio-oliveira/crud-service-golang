@@ -1,6 +1,7 @@
 
 dependecies:
 	@go install github.com/cosmtrek/air@latest
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 # docker-build: @build docker image
 docker-build: 
@@ -14,3 +15,7 @@ build:
 debug: dependecies
 	@docker-compose up -d db db-provisioner
 	@air
+
+# lint: @lint check code quality
+lint: dependecies
+	golangci-lint run

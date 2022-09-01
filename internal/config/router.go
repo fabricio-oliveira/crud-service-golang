@@ -7,6 +7,7 @@ import (
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 )
 
+// Routes map all routes
 func Routes() *gin.Engine {
 	router := gin.New()
 

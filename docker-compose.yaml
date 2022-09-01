@@ -20,7 +20,6 @@ services:
       - crud-service
   db:
     image: amazon/dynamodb-local:latest
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
     ports:
       - 8000:8000
     volumes:
@@ -34,8 +33,8 @@ services:
         --endpoint-url http://db:8000/ \
         --table-name feed \
         --table-class INVOICE \
-        --key-schema AttributeName=Id,KeyType=HASH AttributeName=date,KeyType=RANGE \
-        --attribute-definitions AttributeName=Id,AttributeType=S AttributeName=date,AttributeType=S \
+        --key-schema AttributeName=Id,KeyType=HASH AttributeName=Date,KeyType=RANGE \
+        --attribute-definitions AttributeName=Id,AttributeType=N AttributeName=date,AttributeType=S \
         --billing-mode=PROVISIONED \
         --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
         --region us-east-1 '
@@ -51,6 +50,6 @@ services:
 volumes:
   db-data:
 
+
 networks:
   crud-service:
-    

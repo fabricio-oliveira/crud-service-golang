@@ -2,6 +2,7 @@ package invoice
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -24,7 +25,7 @@ func getClient() *dynamodb.Client {
 func getInvoice(id int) *dynamodb.GetItemInput {
 	return &dynamodb.GetItemInput{
 		Key: map[string]types.AttributeValue{
-			"Id": &types.AttributeValueMemberS{Value: id},
+			"Id": &types.AttributeValueMemberN{Value: strconv.Itoa(id)},
 		},
 		TableName:            aws.String(TABLE_NAME),
 		ConsistentRead:       aws.Bool(true),

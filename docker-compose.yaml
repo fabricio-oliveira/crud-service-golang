@@ -13,7 +13,7 @@ services:
       APP_ENV: local
       AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
       AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
-      REGION: eu-est-1
+      AWS_REGION: eu-est-1
     depends_on:
       - db
     networks:
@@ -31,17 +31,16 @@ services:
     entrypoint: >
       bash -c 'aws dynamodb create-table \
         --endpoint-url http://db:8000/ \
-        --table-name feed \
-        --table-class INVOICE \
-        --key-schema AttributeName=Id,KeyType=HASH AttributeName=Date,KeyType=RANGE \
-        --attribute-definitions AttributeName=Id,AttributeType=N AttributeName=date,AttributeType=S \
+        --table-name invoice \
+        --table-class STANDARD \
+        --key-schema AttributeName=Id,KeyType=HASH AttributeName=CreatedAt,KeyType=RANGE \
+        --attribute-definitions AttributeName=Id,AttributeType=N AttributeName=CreatedAt,AttributeType=S \
         --billing-mode=PROVISIONED \
-        --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-        --region us-east-1 '
+        --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 '
     environment:
       AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
       AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
-      REGION: eu-est-1
+      AWS_REGION: eu-est-1
     depends_on:
       - db
     networks:

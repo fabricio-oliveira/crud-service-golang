@@ -1,20 +1,27 @@
 package invoice
 
 import (
-	"io/ioutil"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func create(c *gin.Context) {
-	jsonData, err := ioutil.ReadAll(c.Request.Body)
+	var invoice Invoice
+	err := c.ShouldBindJSON(&invoice)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{})
+		return
 	}
 	// valid the payload
-	// save the database
-	c.JSON(http.StatusOK, jsonData)
+	if err = createInvoice(&invoice); err != nil {
+		fmt.Printf("test %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, invoice)
 }
 
 func getAll(c *gin.Context) {

@@ -11,9 +11,10 @@ services:
       - "8080:8080"
     environment:
       APP_ENV: local
-      AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
-      AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
-      AWS_REGION: eu-est-1
+      AWS_ACCESS_KEY_ID: DUMMY
+      AWS_SECRET_ACCESS_KEY: DUMMY
+      AWS_DYNAMODB_ENDPOINT: http://db:8000
+      AWS_REGION: us-est-1
     depends_on:
       - db
     networks:
@@ -38,9 +39,9 @@ services:
         --billing-mode=PROVISIONED \
         --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 '
     environment:
-      AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
-      AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
-      AWS_REGION: eu-est-1
+      AWS_ACCESS_KEY_ID: DUMMY
+      AWS_SECRET_ACCESS_KEY: DUMMY
+      AWS_REGION: us-est-1
     depends_on:
       - db
     networks:

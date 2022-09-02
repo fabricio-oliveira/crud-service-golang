@@ -19,3 +19,7 @@ debug: dependecies
 # lint: @lint check code quality
 lint: dependecies
 	golangci-lint run
+
+# unit_test: @unit_test run the unit tests
+unit_test: dependecies
+	go test -ldflags="-s=false" -gcflags="-l" -v ./...

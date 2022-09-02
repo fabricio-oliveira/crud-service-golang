@@ -1,7 +1,7 @@
 package invoice
 
 type Invoice struct {
-	Id        int32   `json:"id" binding:"required"`
+	Id        string  `json:"id" binding:"required"`
 	BillTo    string  `json:"bill_to" binding:"required"`
 	Items     []Items `json:"items"`
 	CreatedAt string

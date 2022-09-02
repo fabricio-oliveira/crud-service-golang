@@ -15,8 +15,8 @@ func create(c *gin.Context) {
 		return
 	}
 	// valid the payload
-	if err = createInvoice(&invoice); err != nil {
-		fmt.Printf("test %v", err)
+	err = createInvoice(&invoice)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
 		return
 	}
@@ -31,8 +31,13 @@ func getAll(c *gin.Context) {
 
 func get(c *gin.Context) {
 	id := c.Param("id")
-	// get invoice from database
-	c.JSON(http.StatusOK, gin.H{"id": id})
+	result, err := getInvoice(id)
+	if err != nil {
+		fmt.Print("test123", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
+		return
+	}
+	c.JSON(http.StatusOK, result)
 }
 
 func delete(c *gin.Context) {

@@ -35,7 +35,7 @@ services:
         --table-name invoice \
         --table-class STANDARD \
         --key-schema AttributeName=Id,KeyType=HASH AttributeName=CreatedAt,KeyType=RANGE \
-        --attribute-definitions AttributeName=Id,AttributeType=N AttributeName=CreatedAt,AttributeType=S \
+        --attribute-definitions AttributeName=Id,AttributeType=S AttributeName=CreatedAt,AttributeType=S \
         --billing-mode=PROVISIONED \
         --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 '
     environment:

@@ -32,7 +32,7 @@ func Get[V interface{}](tableName, projection string, id types.AttributeValue) (
 	return &item, nil
 }
 
-func Create(tableName string, object interface{}) error {
+func Create[V interface{}](tableName string, object V) error {
 	client := getClient()
 	item, err := attributevalue.MarshalMap(object)
 	if err != nil {
@@ -41,7 +41,9 @@ func Create(tableName string, object interface{}) error {
 
 	_, err = client.PutItem(context.TODO(),
 		&dynamodb.PutItemInput{
-			TableName: aws.String(tableName), Item: item,
+			TableName:           aws.String(tableName),
+			Item:                item,
+			ConditionExpression: aws.String("attribute_not_exists(Id)"),
 		})
 
 	if err != nil {

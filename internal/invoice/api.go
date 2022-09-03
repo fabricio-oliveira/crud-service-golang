@@ -11,7 +11,7 @@ func create(c *gin.Context) {
 	var invoice Invoice
 	err := c.ShouldBindJSON(&invoice)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{})
+		c.JSON(http.StatusBadRequest, gin.H{"err": err})
 		return
 	}
 	// valid the payload
@@ -53,7 +53,7 @@ func put(c *gin.Context) {
 }
 
 // Routes map invoices routes
-func Routes(router *gin.Engine) {
+func Routes(router *gin.RouterGroup) {
 	router.GET("/invoices", getAll)
 	router.POST("/invoices", create)
 

@@ -7,7 +7,7 @@ import (
 	repository "github.com/fabricio-oliveira/crud-service-golang/internal/repository/dynamodb"
 )
 
-var TABLE_NAME = "invoice"
+var TABLE_NAME = "Invoice"
 var PROJECTION_EXPRESSION = "Id, BillTo, Items, CreatedAt, UpdatedAt"
 
 func getInvoice(id string) (*Invoice, error) {

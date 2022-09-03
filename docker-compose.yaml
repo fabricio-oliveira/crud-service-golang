@@ -31,13 +31,17 @@ services:
     image: amazon/aws-cli
     entrypoint: >
       bash -c 'aws dynamodb create-table \
-        --endpoint-url http://db:8000/ \
-        --table-name invoice \
-        --table-class STANDARD \
-        --key-schema AttributeName=Id,KeyType=HASH AttributeName=CreatedAt,KeyType=RANGE \
-        --attribute-definitions AttributeName=Id,AttributeType=S AttributeName=CreatedAt,AttributeType=S \
+        --table-name Invoice \
+        --attribute-definitions \
+          AttributeName=Id,AttributeType=S \
+          AttributeName=CreatedAt,AttributeType=S \
+        --key-schema \
+          AttributeName=Id,KeyType=HASH \
+          AttributeName=CreatedAt,KeyType=RANGE \
+        --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
         --billing-mode=PROVISIONED \
-        --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 '
+        --table-class STANDARD \
+        --endpoint-url http://db:8000/'
     environment:
       AWS_ACCESS_KEY_ID: DUMMY
       AWS_SECRET_ACCESS_KEY: DUMMY

@@ -17,9 +17,10 @@ func Routes() *gin.Engine {
 
 	prometheus := ginprometheus.NewPrometheus("gin")
 	prometheus.Use(router)
-
 	healthcheck.Routes(router)
-	invoice.Routes(router)
+
+	v1 := router.Group("api/v1")
+	invoice.Routes(v1)
 
 	return router
 }

@@ -9,12 +9,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func Get[V interface{}](tableName, projection string, id types.AttributeValue) (*V, error) {
+func Get[V interface{}](tableName, projection string, key map[string]types.AttributeValue) (*V, error) {
 	client := getClient()
 	response, error := client.GetItem(context.TODO(), &dynamodb.GetItemInput{
-		Key: map[string]types.AttributeValue{
-			"Id": id,
-		},
+		Key:                  key,
 		TableName:            aws.String(tableName),
 		ConsistentRead:       aws.Bool(true),
 		ProjectionExpression: aws.String(projection),
@@ -33,6 +31,29 @@ func Get[V interface{}](tableName, projection string, id types.AttributeValue) (
 }
 
 func Create[V interface{}](tableName string, object V) error {
+	return upInsert(tableName, object, aws.String("attribute_not_exists(Id)"))
+}
+
+func Update[V interface{}](tableName string, object V) error {
+	return upInsert(tableName, object, nil)
+}
+
+func Delete[V interface{}](tableName string, condition map[string]types.AttributeValue) error {
+	client := getClient()
+
+	_, err := client.DeleteItem(context.TODO(),
+		&dynamodb.DeleteItemInput{
+			Key:       condition,
+			TableName: aws.String(tableName),
+		})
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func upInsert[V interface{}](tableName string, object V, condition *string) error {
 	client := getClient()
 	item, err := attributevalue.MarshalMap(object)
 	if err != nil {
@@ -43,7 +64,7 @@ func Create[V interface{}](tableName string, object V) error {
 		&dynamodb.PutItemInput{
 			TableName:           aws.String(tableName),
 			Item:                item,
-			ConditionExpression: aws.String("attribute_not_exists(Id)"),
+			ConditionExpression: condition,
 		})
 
 	if err != nil {

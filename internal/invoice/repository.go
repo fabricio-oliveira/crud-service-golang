@@ -11,7 +11,9 @@ var TABLE_NAME = "Invoice"
 var PROJECTION_EXPRESSION = "Id, BillTo, Items, CreatedAt, UpdatedAt"
 
 func getInvoice(id string) (*Invoice, error) {
-	key := &types.AttributeValueMemberS{Value: id}
+	key := map[string]types.AttributeValue{
+		"Id": &types.AttributeValueMemberS{Value: id},
+	}
 	return repository.Get[Invoice](TABLE_NAME, PROJECTION_EXPRESSION, key)
 }
 

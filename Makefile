@@ -1,3 +1,5 @@
+.PHONY: build test clean
+
 
 dependecies:
 	@go install github.com/cosmtrek/air@latest
@@ -9,7 +11,8 @@ docker-build:
 
 # build: @build app
 build:
-	@go build ./...
+	@mkdir -p tmp 
+	@go build -o tmp ./...
 
 # debug: @debug start the app in debug mode
 debug: dependecies
@@ -23,3 +26,7 @@ lint: dependecies
 # unit_test: @unit_test run the unit tests
 unit_test: dependecies
 	go test -ldflags="-s=false" -gcflags="-l" -v ./...
+
+# clean: @remove the binaries generated
+clean: 
+	rm -rf ./tmp/*

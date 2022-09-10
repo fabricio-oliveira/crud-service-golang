@@ -76,7 +76,7 @@ paths:
         description: Updated invocie object
         required: true
 
-  /invoices/:id:
+  /invoices/{id}:
     get:
       operationId: getInvoiceByID
       summary: Get invoice by id

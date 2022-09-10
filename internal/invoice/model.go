@@ -12,5 +12,5 @@ type Items struct {
 	Description string `json:"description"`
 	Quantity    int    `json:"quantity"`
 	Unit        string `json:"unity"`
-	Price       int64  `json:"price"`
+	Price       string `json:"price"`
 }

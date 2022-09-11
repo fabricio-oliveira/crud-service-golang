@@ -64,3 +64,114 @@ func TestGet(t *testing.T) {
 		mock.SpyGetParams,
 	)
 }
+
+func TestCreate(t *testing.T) {
+	// inputs
+	tableName := "TestTable"
+	object := TestRecord{
+		Id:         "1",
+		TestColumn: "Fake Value",
+	}
+
+	// mock
+	mock := &dynamodb_mock.DynamoDBMOCK{
+		MockPutItemReturn: &dynamodb.PutItemOutput{},
+	}
+
+	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+		return mock
+	})
+	defer patchGuard.Unpatch()
+
+	err := Create(tableName, object)
+
+	assert.NoError(t, err)
+
+	assert.Equal(t,
+		&dynamodb_mock.SpyParams[dynamodb.PutItemInput]{
+			Ctx: context.TODO(),
+			Params: &dynamodb.PutItemInput{
+				TableName: &tableName,
+				Item: map[string]types.AttributeValue{
+					"Id":         &types.AttributeValueMemberS{Value: object.Id},
+					"TestColumn": &types.AttributeValueMemberS{Value: object.TestColumn},
+				},
+				ConditionExpression: aws.String("attribute_not_exists(Id)"),
+			},
+		},
+		mock.SpyPutParams,
+	)
+}
+
+func TestUpdate(t *testing.T) {
+	// inputs
+	tableName := "TestTable"
+	object := TestRecord{
+		Id:         "1",
+		TestColumn: "Fake Value",
+	}
+
+	// mock
+	mock := &dynamodb_mock.DynamoDBMOCK{
+		MockPutItemReturn: &dynamodb.PutItemOutput{},
+	}
+
+	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+		return mock
+	})
+	defer patchGuard.Unpatch()
+
+	err := Update(tableName, object)
+
+	assert.NoError(t, err)
+
+	assert.Equal(t,
+		&dynamodb_mock.SpyParams[dynamodb.PutItemInput]{
+			Ctx: context.TODO(),
+			Params: &dynamodb.PutItemInput{
+				TableName: &tableName,
+				Item: map[string]types.AttributeValue{
+					"Id":         &types.AttributeValueMemberS{Value: object.Id},
+					"TestColumn": &types.AttributeValueMemberS{Value: object.TestColumn},
+				},
+				ConditionExpression: nil,
+			},
+		},
+		mock.SpyPutParams,
+	)
+}
+
+func TestDelete(t *testing.T) {
+	// inputs
+	tableName := "TestTable"
+	condition := map[string]string{
+		"Id": "1",
+	}
+
+	// mock
+	mock := &dynamodb_mock.DynamoDBMOCK{
+		MockDeleteReturn: &dynamodb.DeleteItemOutput{},
+	}
+
+	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+		return mock
+	})
+	defer patchGuard.Unpatch()
+
+	err := Delete(tableName, condition)
+
+	assert.NoError(t, err)
+
+	assert.Equal(t,
+		&dynamodb_mock.SpyParams[dynamodb.DeleteItemInput]{
+			Ctx: context.TODO(),
+			Params: &dynamodb.DeleteItemInput{
+				TableName: &tableName,
+				Key: map[string]types.AttributeValue{
+					"Id": &types.AttributeValueMemberS{Value: "1"},
+				},
+			},
+		},
+		mock.SpyDeleteParams,
+	)
+}

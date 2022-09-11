@@ -6,18 +6,16 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 func Get[V interface{}](tableName, projection string, selectedKeys map[string]string) (*V, error) {
-
-	key, error := attributevalue.MarshalMap(selectedKeys)
-	if error != nil {
-		return nil, error
+	key, err := attributevalue.MarshalMap(selectedKeys)
+	if err != nil {
+		return nil, err
 	}
 
 	client := getClient()
-	response, error := client.GetItem(context.TODO(),
+	response, err := client.GetItem(context.TODO(),
 		&dynamodb.GetItemInput{
 			TableName:            aws.String(tableName),
 			Key:                  key,
@@ -25,14 +23,14 @@ func Get[V interface{}](tableName, projection string, selectedKeys map[string]st
 			ProjectionExpression: aws.String(projection),
 		})
 
-	if error != nil {
-		return nil, error
+	if err != nil {
+		return nil, err
 	}
 
 	var item V
-	error = attributevalue.UnmarshalMap(response.Item, &item)
-	if error != nil {
-		return nil, error
+	err = attributevalue.UnmarshalMap(response.Item, &item)
+	if err != nil {
+		return nil, err
 	}
 	return &item, nil
 }
@@ -45,12 +43,16 @@ func Update[V interface{}](tableName string, object V) error {
 	return upInsert(tableName, object, nil)
 }
 
-func Delete[V interface{}](tableName string, condition map[string]types.AttributeValue) error {
-	client := getClient()
+func Delete(tableName string, conditions map[string]string) error {
+	key, err := attributevalue.MarshalMap(conditions)
+	if err != nil {
+		return err
+	}
 
-	_, err := client.DeleteItem(context.TODO(),
+	client := getClient()
+	_, err = client.DeleteItem(context.TODO(),
 		&dynamodb.DeleteItemInput{
-			Key:       condition,
+			Key:       key,
 			TableName: aws.String(tableName),
 		})
 

@@ -5,7 +5,7 @@ type Invoice struct {
 	BillTo    string  `json:"bill_to" binding:"required"`
 	Items     []Items `json:"items"`
 	CreatedAt string  `json:"created_at"`
-	UpdateAt  string  `json:"updated_at"`
+	UpdatedAt string  `json:"updated_at"`
 }
 
 type Items struct {

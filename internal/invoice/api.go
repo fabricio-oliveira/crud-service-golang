@@ -33,7 +33,7 @@ func get(c *gin.Context) {
 	id := c.Param("id")
 	result, err := getInvoice(id)
 	if err != nil {
-		fmt.Print("test123", err)
+		fmt.Print("test12", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
 		return
 	}

@@ -11,7 +11,13 @@ import (
 	"github.com/fabricio-oliveira/crud-service-golang/internal/util"
 )
 
-func getClient() *dynamodb.Client {
+type DynamoDBAPI interface {
+	PutItem(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error)
+	DeleteItem(ctx context.Context, params *dynamodb.DeleteItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.DeleteItemOutput, error)
+	GetItem(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error)
+}
+
+func getClient() DynamoDBAPI {
 
 	var properties = []func(*config.LoadOptions) error{}
 	if util.Getenv("APP_ENV", "dev") == "dev" {

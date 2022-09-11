@@ -63,3 +63,13 @@ func TestSetData(t *testing.T) {
 		assert.Equal(t, expeceted, input)
 	}
 }
+
+// fakeOutPut := map[string]types.AttributeValue{
+// 	"Id":          &types.AttributeValueMemberS{Value: "1"},
+// 	"Address":     &types.AttributeValueMemberS{Value: "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678."},
+// 	"CompanyName": &types.AttributeValueMemberS{Value: "Bank of America"},
+// 	"Goods":       &types.AttributeValueMemberL{Value: []types.AttributeValue{}},
+// 	"Amount":      &types.AttributeValueMemberS{Value: "100"},
+// 	"CreatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
+// 	"UpdatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
+// }

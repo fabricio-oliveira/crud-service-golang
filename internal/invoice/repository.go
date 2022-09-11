@@ -7,13 +7,15 @@ import (
 )
 
 var TABLE_NAME = "Invoice"
-var PROJECTION_EXPRESSION = "Id, BillTo, CreatedAt, UpdatedAt"
+var PROJECTION_EXPRESSION = "Id, Address, CreatedAt, UpdatedAt"
 
-// var PROJECTION_EXPRESSION = "Id, BillTo, Items, CreatedAt, UpdatedAt"
+// var PROJECTION_EXPRESSION = "Id, Address, Goods, CreatedAt, UpdatedAt"
 
 func getInvoice(id string) (*Invoice, error) {
-
-	return repository.Get[Invoice](TABLE_NAME, PROJECTION_EXPRESSION, id)
+	keys := map[string]string{
+		"Id": id,
+	}
+	return repository.Get[Invoice](TABLE_NAME, PROJECTION_EXPRESSION, keys)
 }
 
 func createInvoice(invoice *Invoice) error {

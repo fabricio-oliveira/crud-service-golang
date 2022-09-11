@@ -34,10 +34,8 @@ services:
         --table-name Invoice \
         --attribute-definitions \
           AttributeName=Id,AttributeType=S \
-          AttributeName=CreatedAt,AttributeType=S \
         --key-schema \
           AttributeName=Id,KeyType=HASH \
-          AttributeName=CreatedAt,KeyType=RANGE \
         --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
         --billing-mode=PROVISIONED \
         --table-class STANDARD \

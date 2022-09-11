@@ -39,7 +39,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
+                goods:
                   $ref: "#/components/schemas/Invoice"
         "404":
           description: User not found
@@ -145,7 +145,7 @@ paths:
 components:
   schemas:
     Item:
-      description: Items of a invoice
+      description: Goods of a invoice
       type: object
       properties:
         description:
@@ -165,17 +165,15 @@ components:
         - id
       type: object
       properties:
-        bill_to:
-          description: User supplied username
+        address:
+          description: a valid address
           type: string
-          minLength: 4
-          example: John78
-        items:
+        goods:
           $ref: "#/components/schemas/Item"
     Invoice:
       required:
         - id
-        - bill_to
+        - address
       allOf:
         - type: object
           properties:

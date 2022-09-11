@@ -2,7 +2,6 @@ package dynamoDB
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -10,28 +9,23 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func Get[V interface{}](tableName, projection string, id string) (*V, error) {
-	selectedKeys := map[string]string{
-		"ID": id,
-	}
+func Get[V interface{}](tableName, projection string, selectedKeys map[string]string) (*V, error) {
 
 	key, error := attributevalue.MarshalMap(selectedKeys)
 	if error != nil {
-		fmt.Println("test0", error)
 		return nil, error
 	}
 
 	client := getClient()
 	response, error := client.GetItem(context.TODO(),
 		&dynamodb.GetItemInput{
-			TableName: aws.String(tableName),
-			Key:       key,
-			// ConsistentRead:       aws.Bool(true),
-			// ProjectionExpression: aws.String(projection),
+			TableName:            aws.String(tableName),
+			Key:                  key,
+			ConsistentRead:       aws.Bool(true),
+			ProjectionExpression: aws.String(projection),
 		})
 
 	if error != nil {
-		fmt.Println("test1", error)
 		return nil, error
 	}
 

@@ -19,9 +19,10 @@ type TestRecord struct {
 	TestColumn string `json:"test_column"`
 }
 
+var tableName = "TestTable"
+
 func TestGet(t *testing.T) {
 	// inputs
-	tableName := "TestTable"
 	projection := "Id, TestColumn"
 	key := map[string]string{
 		"Id": "1",
@@ -67,7 +68,6 @@ func TestGet(t *testing.T) {
 
 func TestCreate(t *testing.T) {
 	// inputs
-	tableName := "TestTable"
 	object := TestRecord{
 		Id:         "1",
 		TestColumn: "Fake Value",
@@ -105,7 +105,6 @@ func TestCreate(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	// inputs
-	tableName := "TestTable"
 	object := TestRecord{
 		Id:         "1",
 		TestColumn: "Fake Value",
@@ -143,7 +142,6 @@ func TestUpdate(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	// inputs
-	tableName := "TestTable"
 	condition := map[string]string{
 		"Id": "1",
 	}

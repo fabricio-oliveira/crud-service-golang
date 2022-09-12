@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 func Get[V interface{}](tableName, projection string, selectedKeys map[string]string) (*V, error) {
@@ -37,22 +36,7 @@ func Get[V interface{}](tableName, projection string, selectedKeys map[string]st
 	return &item, nil
 }
 
-func GetAll[V interface{}](tableName string, selectedKeys []map[string]string) ([]V, error) {
-	keys := []map[string]types.AttributeValue{}
-	var err error = nil
-
-	for _, value := range selectedKeys {
-		key, err := attributevalue.MarshalMap(value)
-		if err != nil {
-			break
-		}
-		keys = append(keys, key)
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
+func GetAll[V interface{}](tableName string) ([]V, error) {
 	client := getClient()
 	out, err := client.Scan(context.TODO(),
 		&dynamodb.ScanInput{

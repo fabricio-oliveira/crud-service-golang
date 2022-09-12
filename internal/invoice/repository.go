@@ -19,8 +19,7 @@ func getInvoice(id string) (*Invoice, error) {
 }
 
 func getAllInvoice() ([]Invoice, error) {
-	keys := []map[string]string{}
-	return repository.GetAll[Invoice](TABLE_NAME, keys)
+	return repository.GetAll[Invoice](TABLE_NAME)
 }
 
 func createInvoice(invoice *Invoice) error {

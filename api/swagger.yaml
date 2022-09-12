@@ -144,7 +144,7 @@ paths:
 
 components:
   schemas:
-    Item:
+    Goods:
       description: Goods of a invoice
       type: object
       properties:
@@ -168,8 +168,18 @@ components:
         address:
           description: a valid address
           type: string
+        company_name:
+          description: the name of company
+          type: string
+        description:
+          description: the description of invoice
+          type: string
         goods:
-          $ref: "#/components/schemas/Item"
+          $ref: "#/components/schemas/Goods"
+        ammount:
+          description: The total of goods
+          type: number
+          format: decimal
     Invoice:
       required:
         - id

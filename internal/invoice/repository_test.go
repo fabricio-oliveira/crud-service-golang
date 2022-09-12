@@ -22,16 +22,16 @@ func TestSetData(t *testing.T) {
 			return testSetDatauseCase{
 				Invoice{},
 				fake,
-				Invoice{CreatedAt: fake.String(), UpdateAt: fake.String()},
+				Invoice{CreatedAt: fake.String(), UpdatedAt: fake.String()},
 			}
 		}(),
 		func() testSetDatauseCase {
 			createdAt := time.Date(2019, 0, 0, 0, 0, 0, 0, time.UTC)
 			fake := time.Now()
 			return testSetDatauseCase{
-				Invoice{CreatedAt: createdAt.String(), UpdateAt: createdAt.String()},
+				Invoice{CreatedAt: createdAt.String(), UpdatedAt: createdAt.String()},
 				fake,
-				Invoice{CreatedAt: createdAt.String(), UpdateAt: fake.String()},
+				Invoice{CreatedAt: createdAt.String(), UpdatedAt: fake.String()},
 			}
 		}(),
 		func() testSetDatauseCase {
@@ -39,9 +39,9 @@ func TestSetData(t *testing.T) {
 			updatedAt := time.Date(2020, 0, 0, 0, 0, 0, 0, time.UTC)
 			fake := time.Now()
 			return testSetDatauseCase{
-				Invoice{CreatedAt: createdAt.String(), UpdateAt: updatedAt.String()},
+				Invoice{CreatedAt: createdAt.String(), UpdatedAt: updatedAt.String()},
 				fake,
-				Invoice{CreatedAt: createdAt.String(), UpdateAt: fake.String()},
+				Invoice{CreatedAt: createdAt.String(), UpdatedAt: fake.String()},
 			}
 		}(),
 	}

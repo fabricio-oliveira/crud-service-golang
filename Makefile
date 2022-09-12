@@ -27,6 +27,8 @@ lint: dependecies
 unit_test: dependecies
 	go test -ldflags="-s=false" -gcflags="-l" -v ./...
 
+test: unit_test
+
 # clean: @remove the binaries generated
 clean: 
 	rm -rf ./tmp/*

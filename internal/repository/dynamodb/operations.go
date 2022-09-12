@@ -2,10 +2,12 @@ package dynamoDB
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 func Get[V interface{}](tableName, projection string, selectedKeys map[string]string) (*V, error) {
@@ -35,6 +37,47 @@ func Get[V interface{}](tableName, projection string, selectedKeys map[string]st
 	return &item, nil
 }
 
+func GetAll[V interface{}](tableName string, selectedKeys []map[string]string) ([]V, error) {
+	keys := []map[string]types.AttributeValue{}
+	var err error = nil
+
+	for _, value := range selectedKeys {
+		key, err := attributevalue.MarshalMap(value)
+		if err != nil {
+			break
+		}
+		keys = append(keys, key)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	client := getClient()
+	out, err := client.Scan(context.TODO(),
+		&dynamodb.ScanInput{
+			TableName: aws.String(tableName),
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var items []V
+	for _, value := range out.Items {
+		var item V
+		err = attributevalue.UnmarshalMap(value, &item)
+		if err != nil {
+			break
+		}
+		items = append(items, item)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 func Create[V interface{}](tableName string, object V) error {
 	return upInsert(tableName, object, aws.String("attribute_not_exists(Id)"))
 }
@@ -50,7 +93,7 @@ func Delete(tableName string, conditions map[string]string) error {
 	}
 
 	client := getClient()
-	_, err = client.DeleteItem(context.TODO(),
+	result, err := client.DeleteItem(context.TODO(),
 		&dynamodb.DeleteItemInput{
 			Key:       key,
 			TableName: aws.String(tableName),
@@ -59,6 +102,11 @@ func Delete(tableName string, conditions map[string]string) error {
 	if err != nil {
 		return err
 	}
+
+	if len(result.Attributes) == 0 {
+		return fmt.Errorf("StatusCode: 404, Recorde not found")
+	}
+
 	return nil
 }
 

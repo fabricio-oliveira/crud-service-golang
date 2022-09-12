@@ -18,10 +18,33 @@ func getInvoice(id string) (*Invoice, error) {
 	return repository.Get[Invoice](TABLE_NAME, PROJECTION_EXPRESSION, keys)
 }
 
+func getAllInvoice() ([]Invoice, error) {
+	keys := []map[string]string{}
+	return repository.GetAll[Invoice](TABLE_NAME, keys)
+}
+
 func createInvoice(invoice *Invoice) error {
 	setDate(invoice)
-	if error := repository.Create(TABLE_NAME, invoice); error != nil {
-		return error
+	if err := repository.Create(TABLE_NAME, invoice); err != nil {
+		return err
+	}
+	return nil
+}
+
+func updateInvoice(invoice *Invoice) error {
+	setDate(invoice)
+	if err := repository.Update(TABLE_NAME, invoice); err != nil {
+		return err
+	}
+	return nil
+}
+
+func deleteInvocie(id string) error {
+	keys := map[string]string{
+		"Id": id,
+	}
+	if err := repository.Delete(TABLE_NAME, keys); err != nil {
+		return err
 	}
 	return nil
 }

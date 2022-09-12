@@ -150,7 +150,7 @@ func TestDelete(t *testing.T) {
 
 	// mock
 	mock := &dynamodb_mock.DynamoDBMOCK{
-		MockDeleteReturn: &dynamodb.DeleteItemOutput{},
+		MockDeleteReturn: &dynamodb.DeleteItemOutput{Attributes: map[string]types.AttributeValue{"Id": &types.AttributeValueMemberS{Value: "1"}}},
 	}
 
 	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {

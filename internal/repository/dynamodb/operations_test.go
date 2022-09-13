@@ -66,6 +66,49 @@ func TestGet(t *testing.T) {
 	)
 }
 
+func TestGetAll(t *testing.T) {
+	// mock
+	mock := &dynamodb_mock.DynamoDBMOCK{
+		MockScanReturn: &dynamodb.ScanOutput{
+			Items: []map[string]types.AttributeValue{
+				{
+					"Id":         &types.AttributeValueMemberS{Value: "1"},
+					"TestColumn": &types.AttributeValueMemberS{Value: "Fake Value"},
+				},
+				{
+					"Id":         &types.AttributeValueMemberS{Value: "2"},
+					"TestColumn": &types.AttributeValueMemberS{Value: "Fake Value 2"},
+				},
+			},
+		},
+	}
+
+	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+		return mock
+	})
+	defer patchGuard.Unpatch()
+
+	v, err := GetAll[TestRecord](tableName)
+
+	assert.NoError(t, err)
+	assert.Equal(t,
+		[]TestRecord{
+			{Id: "1", TestColumn: "Fake Value"},
+			{Id: "2", TestColumn: "Fake Value 2"},
+		},
+		v)
+
+	assert.Equal(t,
+		&dynamodb_mock.SpyParams[dynamodb.ScanInput]{
+			Ctx: context.TODO(),
+			Params: &dynamodb.ScanInput{
+				TableName: &tableName,
+			},
+		},
+		mock.SpyScanParams,
+	)
+}
+
 func TestCreate(t *testing.T) {
 	// inputs
 	object := TestRecord{

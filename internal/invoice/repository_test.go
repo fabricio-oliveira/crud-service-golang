@@ -4,9 +4,43 @@ import (
 	"testing"
 	"time"
 
-	sm "github.com/cch123/supermonkey"
+	"github.com/go-kiss/monkey"
 	"github.com/stretchr/testify/assert"
 )
+
+// fakeOutPut := map[string]types.AttributeValue{
+// 	"Id":          &types.AttributeValueMemberS{Value: "1"},
+// 	"Address":     &types.AttributeValueMemberS{Value: "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678."},
+// 	"CompanyName": &types.AttributeValueMemberS{Value: "Bank of America"},
+// 	"Goods":       &types.AttributeValueMemberL{Value: []types.AttributeValue{}},
+// 	"Amount":      &types.AttributeValueMemberS{Value: "100"},
+// 	"CreatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
+// 	"UpdatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
+// }
+
+// func TestGetInvoice(t *testing.T) {
+// 	//input
+// 	id := "1"
+
+// 	//mock
+// 	expeceted := &Invoice{
+// 		Id: "1",
+// 	}
+
+// 	patchGuard := monkey.Patch(repository.Get[Invoice], func(tableName, projection string, selectedKeys map[string]string) (*any, error) {
+// 		fmt.Println("test1")
+// 		// assert.Equal(t, "Invoice", TABLE_NAME)
+// 		// assert.Equal(t, "Id, Address, Goods, CreatedAt, UpdatedAt", PROJECTION_EXPRESSION)
+// 		// assert.Equal(t, map[string]string{"Id": id}, selectedKeys)
+// 		return nil, nil
+// 	}, monkey.OptGeneric)
+// 	defer patchGuard.Unpatch()
+
+// 	invoice, error := getInvoice(id)
+// 	fmt.Println("test123", invoice, error)
+
+// 	assert.Equal(t, expeceted, invoice)
+// }
 
 type testSetDatauseCase struct {
 	input    Invoice
@@ -51,7 +85,7 @@ func TestSetData(t *testing.T) {
 		input, fake, expeceted := tt.input, tt.fake, tt.expected
 
 		// mock
-		patchGuard := sm.Patch(time.Now, func() time.Time {
+		patchGuard := monkey.Patch(time.Now, func() time.Time {
 			return fake
 		})
 		defer patchGuard.Unpatch()
@@ -63,13 +97,3 @@ func TestSetData(t *testing.T) {
 		assert.Equal(t, expeceted, input)
 	}
 }
-
-// fakeOutPut := map[string]types.AttributeValue{
-// 	"Id":          &types.AttributeValueMemberS{Value: "1"},
-// 	"Address":     &types.AttributeValueMemberS{Value: "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678."},
-// 	"CompanyName": &types.AttributeValueMemberS{Value: "Bank of America"},
-// 	"Goods":       &types.AttributeValueMemberL{Value: []types.AttributeValue{}},
-// 	"Amount":      &types.AttributeValueMemberS{Value: "100"},
-// 	"CreatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
-// 	"UpdatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
-// }

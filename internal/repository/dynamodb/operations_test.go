@@ -8,11 +8,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/go-kiss/monkey"
 	"github.com/stretchr/testify/assert"
 
 	dynamodb_mock "github.com/fabricio-oliveira/crud-service-golang/internal/repository/dynamodb/mock"
-
-	sm "github.com/cch123/supermonkey"
 )
 
 type TestRecord struct {
@@ -39,7 +38,7 @@ func TestGet(t *testing.T) {
 		},
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -79,7 +78,7 @@ func TestGetError(t *testing.T) {
 		MockError: fmt.Errorf("internal error"),
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -122,7 +121,7 @@ func TestGetAll(t *testing.T) {
 		},
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -154,7 +153,7 @@ func TestGetAllError(t *testing.T) {
 		MockError: fmt.Errorf("internal error"),
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -187,7 +186,7 @@ func TestCreate(t *testing.T) {
 		MockPutItemReturn: &dynamodb.PutItemOutput{},
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -224,7 +223,7 @@ func TestCreateError(t *testing.T) {
 		MockError: fmt.Errorf("internal error"),
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -261,7 +260,7 @@ func TestUpdate(t *testing.T) {
 		MockPutItemReturn: &dynamodb.PutItemOutput{},
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -298,7 +297,7 @@ func TestUpdateError(t *testing.T) {
 		MockError: fmt.Errorf("internal error"),
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -334,7 +333,7 @@ func TestDelete(t *testing.T) {
 		MockDeleteReturn: &dynamodb.DeleteItemOutput{Attributes: map[string]types.AttributeValue{"Id": &types.AttributeValueMemberS{Value: "1"}}},
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()
@@ -368,7 +367,7 @@ func TestDeleteError(t *testing.T) {
 		MockError: fmt.Errorf("internal error"),
 	}
 
-	patchGuard := sm.Patch(getClient, func() DynamoDBAPI {
+	patchGuard := monkey.Patch(getClient, func() DynamoDBAPI {
 		return mock
 	})
 	defer patchGuard.Unpatch()

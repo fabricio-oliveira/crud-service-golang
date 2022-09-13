@@ -25,7 +25,7 @@ lint: dependecies
 
 # unit_test: @unit_test run the unit tests
 unit_test: dependecies
-	go test -ldflags="-s=false" -gcflags="-l" -v ./...
+	go test -ldflags="-s=false" -gcflags=all=-l -cover -v ./...
 
 test: unit_test
 

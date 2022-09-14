@@ -39,10 +39,8 @@ paths:
             application/json:
               schema:
                 type: array
-                goods:
+                items:
                   $ref: "#/components/schemas/Invoice"
-        "404":
-          description: User not found
         "500":
           description: An internal Error occurred
     post:

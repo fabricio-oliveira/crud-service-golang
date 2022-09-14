@@ -1,7 +1,6 @@
 package invoice
 
 import (
-	"fmt"
 	"time"
 
 	repository "github.com/fabricio-oliveira/crud-service-golang/internal/repository/dynamodb"
@@ -14,7 +13,6 @@ func getInvoice(id string) (*Invoice, error) {
 	keys := map[string]string{
 		"Id": id,
 	}
-	fmt.Println("test0")
 	return repository.Get[Invoice](TABLE_NAME, PROJECTION_EXPRESSION, keys)
 }
 

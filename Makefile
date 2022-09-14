@@ -1,5 +1,6 @@
 .PHONY: build test clean
 
+TESTS ?= ./...
 
 dependecies:
 	@go install github.com/cosmtrek/air@latest
@@ -25,7 +26,7 @@ lint: dependecies
 
 # unit_test: @unit_test run the unit tests
 unit_test: dependecies
-	go test -ldflags="-s=false" -gcflags=all=-l -cover -v ./...
+	go test -ldflags="-s=false" -gcflags=all=-l -cover -v $(TESTS)
 
 test: unit_test
 

@@ -10,7 +10,6 @@ import (
 )
 
 func Get[V any](tableName, projection string, selectedKeys map[string]string) (*V, error) {
-	fmt.Println("testx")
 	key, err := attributevalue.MarshalMap(selectedKeys)
 	if err != nil {
 		return nil, err

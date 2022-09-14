@@ -27,12 +27,11 @@ import (
 // 		Id: "1",
 // 	}
 
-// 	patchGuard := monkey.Patch(repository.Get[Invoice], func(tableName, projection string, selectedKeys map[string]string) (*any, error) {
-// 		fmt.Println("test1")
+// 	patchGuard := monkey.Patch(repository.Get[Invoice], func(tableName, projection string, selectedKeys map[string]string) (*Invoice, error) {
 // 		// assert.Equal(t, "Invoice", TABLE_NAME)
 // 		// assert.Equal(t, "Id, Address, Goods, CreatedAt, UpdatedAt", PROJECTION_EXPRESSION)
 // 		// assert.Equal(t, map[string]string{"Id": id}, selectedKeys)
-// 		return nil, nil
+// 		return &Invoice{}, nil
 // 	}, monkey.OptGeneric)
 // 	defer patchGuard.Unpatch()
 

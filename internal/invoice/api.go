@@ -17,10 +17,6 @@ func create(c *gin.Context) {
 	// valid the payload
 	err = createInvoice(&invoice)
 	if err != nil {
-		if strings.Contains(err.Error(), "StatusCode: 400") {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "invalid attribute receives"})
-			return
-		}
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
 		return
 	}

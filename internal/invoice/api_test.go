@@ -248,5 +248,33 @@ func TestCreateInvalidBody(t *testing.T) {
 		b, _ := ioutil.ReadAll(w.Body)
 		assert.Equal(t, tt.expected, string(b))
 	}
+}
 
+func TestCreateInternalError(t *testing.T) {
+	//mock
+	patchGuard := monkey.Patch(createInvoice, func(invoice *Invoice) error {
+		return fmt.Errorf("generic error")
+	})
+	defer patchGuard.Unpatch()
+
+	//input
+	invoicesInput := Invoice{
+		Id:          "1",
+		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
+		CompanyName: "Bank of America",
+		Description: "service of development of software",
+		Goods:       []Goods{},
+		Amount:      "100.00",
+	}
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	setBody(ctx, invoicesInput)
+
+	create(ctx)
+
+	assert.Equal(t, w.Code, http.StatusInternalServerError)
+
+	b, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, string(b), `{"message":"internal server error"}`)
 }

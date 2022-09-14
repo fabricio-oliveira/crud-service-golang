@@ -18,6 +18,10 @@ import (
 // 	"UpdatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
 // }
 
+// func fakeGet[T any](tableName, projection string, selectedKeys map[string]string) (*T, error) {
+// 	return nil, nil
+// }
+
 // func TestGetInvoice(t *testing.T) {
 // 	//input
 // 	id := "1"
@@ -27,16 +31,15 @@ import (
 // 		Id: "1",
 // 	}
 
-// 	patchGuard := monkey.Patch(repository.Get[Invoice], func(tableName, projection string, selectedKeys map[string]string) (*Invoice, error) {
-// 		// assert.Equal(t, "Invoice", TABLE_NAME)
-// 		// assert.Equal(t, "Id, Address, Goods, CreatedAt, UpdatedAt", PROJECTION_EXPRESSION)
-// 		// assert.Equal(t, map[string]string{"Id": id}, selectedKeys)
-// 		return &Invoice{}, nil
-// 	}, monkey.OptGeneric)
+// 	fakeGet := func[T any](tableName, projection string, selectedKeys map[string]string) (*T, error) {
+// 		fmt.Println("test0")
+// 		return nil, nil
+// 	}
+
+// 	patchGuard := monkey.Patch(repository.Get[Invoice], fakeGet, monkey.OptGeneric)
 // 	defer patchGuard.Unpatch()
 
-// 	invoice, error := getInvoice(id)
-// 	fmt.Println("test123", invoice, error)
+// 	invoice, _ := getInvoice(id)
 
 // 	assert.Equal(t, expeceted, invoice)
 // }

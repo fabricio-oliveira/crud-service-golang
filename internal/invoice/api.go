@@ -11,7 +11,7 @@ func create(c *gin.Context) {
 	var invoice Invoice
 	err := c.ShouldBindJSON(&invoice)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err": err})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 	// valid the payload

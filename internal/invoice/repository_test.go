@@ -41,40 +41,48 @@ import (
 // 	assert.Equal(t, expeceted, invoice)
 // }
 
-type testSetDatauseCase struct {
+type testSetDefaultValuesUseCase struct {
 	input    Invoice
 	fake     time.Time
 	expected Invoice
 }
 
-func TestSetData(t *testing.T) {
+func TestSetDefaultValues(t *testing.T) {
 
-	useCases := []testSetDatauseCase{
-		func() testSetDatauseCase {
+	useCases := []testSetDefaultValuesUseCase{
+		func() testSetDefaultValuesUseCase {
 			fake := time.Now()
-			return testSetDatauseCase{
+			return testSetDefaultValuesUseCase{
 				Invoice{},
 				fake,
-				Invoice{CreatedAt: fake.String(), UpdatedAt: fake.String()},
+				Invoice{CreatedAt: fake.String(), UpdatedAt: fake.String(), Goods: []Goods{}},
 			}
 		}(),
-		func() testSetDatauseCase {
+		func() testSetDefaultValuesUseCase {
+			fake := time.Now()
+			return testSetDefaultValuesUseCase{
+				Invoice{Goods: []Goods{}},
+				fake,
+				Invoice{CreatedAt: fake.String(), UpdatedAt: fake.String(), Goods: []Goods{}},
+			}
+		}(),
+		func() testSetDefaultValuesUseCase {
 			createdAt := time.Date(2019, 0, 0, 0, 0, 0, 0, time.UTC)
 			fake := time.Now()
-			return testSetDatauseCase{
+			return testSetDefaultValuesUseCase{
 				Invoice{CreatedAt: createdAt.String(), UpdatedAt: createdAt.String()},
 				fake,
-				Invoice{CreatedAt: createdAt.String(), UpdatedAt: fake.String()},
+				Invoice{CreatedAt: createdAt.String(), UpdatedAt: fake.String(), Goods: []Goods{}},
 			}
 		}(),
-		func() testSetDatauseCase {
+		func() testSetDefaultValuesUseCase {
 			createdAt := time.Date(2019, 0, 0, 0, 0, 0, 0, time.UTC)
 			updatedAt := time.Date(2020, 0, 0, 0, 0, 0, 0, time.UTC)
 			fake := time.Now()
-			return testSetDatauseCase{
+			return testSetDefaultValuesUseCase{
 				Invoice{CreatedAt: createdAt.String(), UpdatedAt: updatedAt.String()},
 				fake,
-				Invoice{CreatedAt: createdAt.String(), UpdatedAt: fake.String()},
+				Invoice{CreatedAt: createdAt.String(), UpdatedAt: fake.String(), Goods: []Goods{}},
 			}
 		}(),
 	}
@@ -90,7 +98,7 @@ func TestSetData(t *testing.T) {
 		defer patchGuard.Unpatch()
 
 		// check
-		setDate(&input)
+		setDefaultValues(&input)
 
 		// assert
 		assert.Equal(t, expeceted, input)

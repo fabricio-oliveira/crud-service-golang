@@ -196,3 +196,57 @@ func TestCreateSuccesss(t *testing.T) {
 	invoicesInput.UpdatedAt = mockDate
 	assert.Equal(t, result, invoicesInput)
 }
+
+type testCreateUseCase struct {
+	input    func(invoice Invoice) *Invoice
+	expected string
+}
+
+func TestCreateInvalidBody(t *testing.T) {
+	//defaultInvoice
+	defaultInvoice := Invoice{
+		Id:          "1",
+		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
+		CompanyName: "Bank of America",
+		Description: "service of development of software",
+	}
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+
+	useCases := []testCreateUseCase{
+		{
+			input: func(invoice Invoice) *Invoice {
+				invoice.Id = ""
+				return &invoice
+			},
+			expected: `{"message":"Key: 'Invoice.Id' Error:Field validation for 'Id' failed on the 'required' tag"}`,
+		},
+		{
+			input: func(invoice Invoice) *Invoice {
+				invoice.Address = ""
+				return &invoice
+			},
+			expected: `{"message":"Key: 'Invoice.Address' Error:Field validation for 'Address' failed on the 'required' tag"}`,
+		},
+		{
+			input: func(invoice Invoice) *Invoice {
+				invoice.CompanyName = ""
+				return &invoice
+			},
+			expected: `{"message":"Key: 'Invoice.CompanyName' Error:Field validation for 'CompanyName' failed on the 'required' tag"}`,
+		},
+	}
+
+	for _, tt := range useCases {
+		invoice := tt.input(defaultInvoice)
+		setBody(ctx, invoice)
+		create(ctx)
+
+		assert.Equal(t, w.Code, http.StatusBadRequest)
+
+		b, _ := ioutil.ReadAll(w.Body)
+		assert.Equal(t, tt.expected, string(b))
+	}
+
+}

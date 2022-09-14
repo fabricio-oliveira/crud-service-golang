@@ -21,7 +21,7 @@ func getAllInvoice() ([]Invoice, error) {
 }
 
 func createInvoice(invoice *Invoice) error {
-	setDate(invoice)
+	setDefaultValues(invoice)
 	if err := repository.Create(TABLE_NAME, invoice); err != nil {
 		return err
 	}
@@ -29,7 +29,7 @@ func createInvoice(invoice *Invoice) error {
 }
 
 func updateInvoice(invoice *Invoice) error {
-	setDate(invoice)
+	setDefaultValues(invoice)
 	if err := repository.Update(TABLE_NAME, invoice); err != nil {
 		return err
 	}
@@ -46,11 +46,15 @@ func deleteInvocie(id string) error {
 	return nil
 }
 
-func setDate(invoice *Invoice) {
+func setDefaultValues(invoice *Invoice) {
 	current := time.Now().String()
 	if invoice.CreatedAt == "" {
 		invoice.CreatedAt = current
 	}
 
 	invoice.UpdatedAt = current
+
+	if invoice.Goods == nil {
+		invoice.Goods = []Goods{}
+	}
 }

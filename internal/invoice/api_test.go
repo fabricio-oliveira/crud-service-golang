@@ -16,6 +16,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type testCreateUpdateUseCase struct {
+	input    func(invoice Invoice) *Invoice
+	expected string
+}
+
 func setBody(ctx *gin.Context, content interface{}) {
 	ctx.Request = &http.Request{
 		Header: make(http.Header),
@@ -34,9 +39,9 @@ func setBody(ctx *gin.Context, content interface{}) {
 
 func TestGetSuccesss(t *testing.T) {
 
-	//mock
+	// mock
 	invoice := Invoice{
-		Id:          "1",
+		ID:          "1",
 		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
 		CompanyName: "Bank of America",
 		Goods:       []Goods{},
@@ -49,7 +54,7 @@ func TestGetSuccesss(t *testing.T) {
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
@@ -60,22 +65,23 @@ func TestGetSuccesss(t *testing.T) {
 	b, _ := ioutil.ReadAll(w.Body)
 
 	result := Invoice{}
-	json.Unmarshal(b, &result)
+	err := json.Unmarshal(b, &result)
+	assert.NoError(t, err)
 
 	assert.Equal(t, result, invoice)
 }
 
 func TestGetNotFound(t *testing.T) {
 
-	//mock
+	// mock
 	patchGuard := monkey.Patch(getInvoice, func(id string) (*Invoice, error) {
 		return &Invoice{
-			Id: "",
+			ID: "",
 		}, nil
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
@@ -89,13 +95,13 @@ func TestGetNotFound(t *testing.T) {
 }
 
 func TestGetNotInternalError(t *testing.T) {
-	//mock
+	// mock
 	patchGuard := monkey.Patch(getInvoice, func(id string) (*Invoice, error) {
 		return nil, fmt.Errorf("fake error")
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
@@ -109,10 +115,10 @@ func TestGetNotInternalError(t *testing.T) {
 }
 
 func TestGetAllSuccesss(t *testing.T) {
-	//mock
+	// mock
 	invoices := []Invoice{
 		{
-			Id:          "1",
+			ID:          "1",
 			Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
 			CompanyName: "Bank of America",
 			Goods:       []Goods{},
@@ -126,7 +132,7 @@ func TestGetAllSuccesss(t *testing.T) {
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
@@ -136,7 +142,8 @@ func TestGetAllSuccesss(t *testing.T) {
 	b, _ := ioutil.ReadAll(w.Body)
 
 	result := []Invoice{}
-	json.Unmarshal(b, &result)
+	err := json.Unmarshal(b, &result)
+	assert.NoError(t, err)
 
 	assert.Equal(t, invoices, result)
 }
@@ -148,7 +155,7 @@ func TestGetInternalError(t *testing.T) {
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 
@@ -161,7 +168,7 @@ func TestGetInternalError(t *testing.T) {
 }
 
 func TestCreateSuccesss(t *testing.T) {
-	//mock
+	// mock
 	mockDate := time.Now().String()
 	patchGuard := monkey.Patch(createInvoice, func(invoice *Invoice) error {
 		invoice.CreatedAt = mockDate
@@ -170,9 +177,9 @@ func TestCreateSuccesss(t *testing.T) {
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	invoicesInput := Invoice{
-		Id:          "1",
+		ID:          "1",
 		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
 		CompanyName: "Bank of America",
 		Description: "service of development of software",
@@ -190,22 +197,17 @@ func TestCreateSuccesss(t *testing.T) {
 
 	b, _ := ioutil.ReadAll(w.Body)
 	result := Invoice{}
-	json.Unmarshal(b, &result)
+	err := json.Unmarshal(b, &result)
 
+	assert.NoError(t, err)
 	invoicesInput.CreatedAt = mockDate
 	invoicesInput.UpdatedAt = mockDate
 	assert.Equal(t, result, invoicesInput)
 }
 
-type testCreateUseCase struct {
-	input    func(invoice Invoice) *Invoice
-	expected string
-}
-
 func TestCreateInvalidBody(t *testing.T) {
-	//defaultInvoice
 	defaultInvoice := Invoice{
-		Id:          "1",
+		ID:          "1",
 		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
 		CompanyName: "Bank of America",
 		Description: "service of development of software",
@@ -214,10 +216,10 @@ func TestCreateInvalidBody(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 
-	useCases := []testCreateUseCase{
+	useCases := []testCreateUpdateUseCase{
 		{
 			input: func(invoice Invoice) *Invoice {
-				invoice.Id = ""
+				invoice.ID = ""
 				return &invoice
 			},
 			expected: `{"message":"Key: 'Invoice.Id' Error:Field validation for 'Id' failed on the 'required' tag"}`,
@@ -251,15 +253,15 @@ func TestCreateInvalidBody(t *testing.T) {
 }
 
 func TestCreateInternalError(t *testing.T) {
-	//mock
+	// mock
 	patchGuard := monkey.Patch(createInvoice, func(invoice *Invoice) error {
 		return fmt.Errorf("generic error")
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	invoicesInput := Invoice{
-		Id:          "1",
+		ID:          "1",
 		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
 		CompanyName: "Bank of America",
 		Description: "service of development of software",
@@ -281,13 +283,13 @@ func TestCreateInternalError(t *testing.T) {
 
 func TestDeleteSuccesss(t *testing.T) {
 
-	//mock
+	// mock
 	patchGuard := monkey.Patch(deleteInvocie, func(id string) error {
 		return nil
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
@@ -302,13 +304,13 @@ func TestDeleteSuccesss(t *testing.T) {
 
 func TestDeleteNotFound(t *testing.T) {
 
-	//mock
+	// mock
 	patchGuard := monkey.Patch(deleteInvocie, func(id string) error {
 		return nil
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
@@ -323,21 +325,61 @@ func TestDeleteNotFound(t *testing.T) {
 
 func TestDeleteInternalError(t *testing.T) {
 
-	//mock
+	// mock
 	patchGuard := monkey.Patch(deleteInvocie, func(id string) error {
 		return fmt.Errorf("generic error")
 	})
 	defer patchGuard.Unpatch()
 
-	//input
+	// input
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
 
 	delete(ctx)
 
-	assert.Equal(t, w.Code, http.StatusOK)
+	assert.Equal(t, w.Code, http.StatusInternalServerError)
 	b, _ := ioutil.ReadAll(w.Body)
 
 	assert.Equal(t, string(b), `{"message":"internal server error"}`)
+}
+
+func TestUpdateInvalidBody(t *testing.T) {
+	defaultInvoice := Invoice{
+		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
+		CompanyName: "Bank of America",
+		Description: "service of development of software",
+	}
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+
+	useCases := []testCreateUpdateUseCase{
+		{
+			input: func(invoice Invoice) *Invoice {
+				invoice.Address = ""
+				return &invoice
+			},
+			expected: `{"message":"Key: 'Invoice.Address' Error:Field validation for 'Address' failed on the 'required' tag"}`,
+		},
+		{
+			input: func(invoice Invoice) *Invoice {
+				invoice.CompanyName = ""
+				return &invoice
+			},
+			expected: `{"message":"Key: 'Invoice.CompanyName' Error:Field validation for 'CompanyName' failed on the 'required' tag"}`,
+		},
+	}
+
+	for _, tt := range useCases {
+		invoice := tt.input(defaultInvoice)
+		setBody(ctx, invoice)
+		ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
+		put(ctx)
+
+		assert.Equal(t, w.Code, http.StatusBadRequest)
+
+		b, _ := ioutil.ReadAll(w.Body)
+		assert.Equal(t, tt.expected, string(b))
+	}
 }

@@ -7,16 +7,54 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func sanitize(invoice *Invoice) {
+	invoice.CreatedAt = ""
+	invoice.UpdatedAt = ""
+}
+
 func create(c *gin.Context) {
+	var invoice Invoice
+	err := c.ShouldBindJSON(&invoice)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if invoice.ID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Key: 'Invoice.Id' Error:Field validation for 'Id' failed on the 'required' tag"})
+		return
+	}
+
+	sanitize(&invoice)
+
+	err = createInvoice(&invoice)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, invoice)
+}
+
+func put(c *gin.Context) {
+
 	var invoice Invoice
 	err := c.ShouldBindJSON(&invoice)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	// valid the payload
-	err = createInvoice(&invoice)
+
+	sanitize(&invoice)
+	invoice.ID = c.Param("id")
+
+	err = updateInvoice(&invoice)
 	if err != nil {
+		if strings.Contains(err.Error(), "StatusCode: 400") {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "invalid attribute receives"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
 		return
 	}
@@ -40,7 +78,7 @@ func get(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
 		return
 	}
-	if result.Id == "" {
+	if result.ID == "" {
 		c.JSON(http.StatusNotFound, gin.H{"message": "invoice not found"})
 		return
 	}
@@ -59,27 +97,6 @@ func delete(c *gin.Context) {
 		return
 	}
 	c.Status(http.StatusOK)
-}
-
-func put(c *gin.Context) {
-	var invoice Invoice
-	err := c.ShouldBindJSON(&invoice)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err": err})
-		return
-	}
-	// valid the payload
-	err = updateInvoice(&invoice)
-	if err != nil {
-		if strings.Contains(err.Error(), "StatusCode: 400") {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "invalid attribute receives"})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
-		return
-	}
-
-	c.JSON(http.StatusCreated, invoice)
 }
 
 // Routes map invoices routes

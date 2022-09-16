@@ -278,3 +278,66 @@ func TestCreateInternalError(t *testing.T) {
 	b, _ := ioutil.ReadAll(w.Body)
 	assert.Equal(t, string(b), `{"message":"internal server error"}`)
 }
+
+func TestDeleteSuccesss(t *testing.T) {
+
+	//mock
+	patchGuard := monkey.Patch(deleteInvocie, func(id string) error {
+		return nil
+	})
+	defer patchGuard.Unpatch()
+
+	//input
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
+
+	delete(ctx)
+
+	assert.Equal(t, w.Code, http.StatusOK)
+	b, _ := ioutil.ReadAll(w.Body)
+
+	assert.Equal(t, string(b), "")
+}
+
+func TestDeleteNotFound(t *testing.T) {
+
+	//mock
+	patchGuard := monkey.Patch(deleteInvocie, func(id string) error {
+		return nil
+	})
+	defer patchGuard.Unpatch()
+
+	//input
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
+
+	delete(ctx)
+
+	assert.Equal(t, w.Code, http.StatusOK)
+	b, _ := ioutil.ReadAll(w.Body)
+
+	assert.Equal(t, string(b), "")
+}
+
+func TestDeleteInternalError(t *testing.T) {
+
+	//mock
+	patchGuard := monkey.Patch(deleteInvocie, func(id string) error {
+		return fmt.Errorf("generic error")
+	})
+	defer patchGuard.Unpatch()
+
+	//input
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
+
+	delete(ctx)
+
+	assert.Equal(t, w.Code, http.StatusOK)
+	b, _ := ioutil.ReadAll(w.Body)
+
+	assert.Equal(t, string(b), `{"message":"internal server error"}`)
+}

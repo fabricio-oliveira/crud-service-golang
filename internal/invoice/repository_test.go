@@ -8,42 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// fakeOutPut := map[string]types.AttributeValue{
-// 	"Id":          &types.AttributeValueMemberS{Value: "1"},
-// 	"Address":     &types.AttributeValueMemberS{Value: "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678."},
-// 	"CompanyName": &types.AttributeValueMemberS{Value: "Bank of America"},
-// 	"Goods":       &types.AttributeValueMemberL{Value: []types.AttributeValue{}},
-// 	"Amount":      &types.AttributeValueMemberS{Value: "100"},
-// 	"CreatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
-// 	"UpdatedAt":   &types.AttributeValueMemberS{Value: "Mon Jan 2 15:04:05 MST 2006"},
-// }
-
-// func fakeGet[T any](tableName, projection string, selectedKeys map[string]string) (*T, error) {
-// 	return nil, nil
-// }
-
-// func TestGetInvoice(t *testing.T) {
-// 	//input
-// 	id := "1"
-
-// 	//mock
-// 	expeceted := &Invoice{
-// 		Id: "1",
-// 	}
-
-// 	fakeGet := func[T any](tableName, projection string, selectedKeys map[string]string) (*T, error) {
-// 		fmt.Println("test0")
-// 		return nil, nil
-// 	}
-
-// 	patchGuard := monkey.Patch(repository.Get[Invoice], fakeGet, monkey.OptGeneric)
-// 	defer patchGuard.Unpatch()
-
-// 	invoice, _ := getInvoice(id)
-
-// 	assert.Equal(t, expeceted, invoice)
-// }
-
 type testSetDefaultValuesUseCase struct {
 	input    Invoice
 	fake     time.Time

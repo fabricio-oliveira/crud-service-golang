@@ -35,7 +35,7 @@ services:
         --attribute-definitions \
           AttributeName=Id,AttributeType=S \
         --key-schema \
-          AttributeName=Id,KeyType=HASH \
+          AttributeName=ID,KeyType=HASH \
         --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
         --billing-mode=PROVISIONED \
         --table-class STANDARD \

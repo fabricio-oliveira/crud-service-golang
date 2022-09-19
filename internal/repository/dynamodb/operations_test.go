@@ -278,7 +278,7 @@ func TestUpdate(t *testing.T) {
 					"Id":         &types.AttributeValueMemberS{Value: object.Id},
 					"TestColumn": &types.AttributeValueMemberS{Value: object.TestColumn},
 				},
-				ConditionExpression: nil,
+				ConditionExpression: aws.String("attribute_exists(Id)"),
 			},
 		},
 		mock.SpyPutParams,
@@ -315,7 +315,7 @@ func TestUpdateError(t *testing.T) {
 					"Id":         &types.AttributeValueMemberS{Value: object.Id},
 					"TestColumn": &types.AttributeValueMemberS{Value: object.TestColumn},
 				},
-				ConditionExpression: nil,
+				ConditionExpression: aws.String("attribute_exists(Id)"),
 			},
 		},
 		mock.SpyPutParams,
@@ -375,6 +375,7 @@ func TestDeleteError(t *testing.T) {
 	err := Delete(tableName, condition)
 
 	assert.Error(t, err)
+	assert.Equal(t, "internal error", err.Error())
 
 	assert.Equal(t,
 		&dynamodb_mock.SpyParams[dynamodb.DeleteItemInput]{

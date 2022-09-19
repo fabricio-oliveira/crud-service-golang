@@ -59,7 +59,7 @@ func put(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, invoice)
+	c.JSON(http.StatusOK, invoice)
 }
 
 func getAll(c *gin.Context) {

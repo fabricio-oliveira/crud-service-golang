@@ -22,14 +22,17 @@ debug: dependecies
 
 # lint: @lint check code quality
 lint: dependecies
-	golangci-lint run
+	@golangci-lint run
 
 # unit_test: @unit_test run the unit tests
 unit_test: dependecies
-	go test -ldflags="-s=false" -gcflags=all=-l -cover -v $(TESTS)
+	@go test -ldflags="-s=false" -gcflags=all=-l -cover -coverprofile=coverage.out -v $(TESTS)
 
 test: unit_test
 
+coverage: test
+	@go tool cover -func=coverage.out
+
 # clean: @remove the binaries generated
 clean: 
-	rm -rf ./tmp/*
+	@rm -rf ./tmp/*

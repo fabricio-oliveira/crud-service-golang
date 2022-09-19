@@ -67,7 +67,7 @@ func Create[V any](tableName string, object V) error {
 }
 
 func Update[V any](tableName string, object V) error {
-	return upInsert(tableName, object, nil)
+	return upInsert(tableName, object, aws.String("attribute_exists(Id)"))
 }
 
 func Delete(tableName string, conditions map[string]string) error {
@@ -94,13 +94,12 @@ func Delete(tableName string, conditions map[string]string) error {
 	return nil
 }
 
-func upInsert[V any](tableName string, object V, condition *string) error {
+func upInsert(tableName string, object any, condition *string) error {
 	client := getClient()
 	item, err := attributevalue.MarshalMap(object)
 	if err != nil {
 		return err
 	}
-
 	_, err = client.PutItem(context.TODO(),
 		&dynamodb.PutItemInput{
 			TableName:           aws.String(tableName),

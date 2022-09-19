@@ -61,14 +61,14 @@ func TestGetSuccesss(t *testing.T) {
 
 	get(ctx)
 
-	assert.Equal(t, w.Code, http.StatusOK)
+	assert.Equal(t, http.StatusOK, w.Code)
 	b, _ := ioutil.ReadAll(w.Body)
 
 	result := Invoice{}
 	err := json.Unmarshal(b, &result)
 	assert.NoError(t, err)
 
-	assert.Equal(t, result, invoice)
+	assert.Equal(t, invoice, result)
 }
 
 func TestGetNotFound(t *testing.T) {
@@ -88,7 +88,7 @@ func TestGetNotFound(t *testing.T) {
 
 	get(ctx)
 
-	assert.Equal(t, w.Code, http.StatusNotFound)
+	assert.Equal(t, http.StatusNotFound, w.Code)
 	b, _ := ioutil.ReadAll(w.Body)
 
 	assert.Equal(t, `{"message":"invoice not found"}`, string(b))
@@ -108,7 +108,7 @@ func TestGetNotInternalError(t *testing.T) {
 
 	get(ctx)
 
-	assert.Equal(t, w.Code, http.StatusInternalServerError)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	b, _ := ioutil.ReadAll(w.Body)
 
 	assert.Equal(t, `{"message":"internal server error"}`, string(b))
@@ -138,7 +138,7 @@ func TestGetAllSuccesss(t *testing.T) {
 
 	getAll(c)
 
-	assert.Equal(t, w.Code, http.StatusOK)
+	assert.Equal(t, http.StatusOK, w.Code)
 	b, _ := ioutil.ReadAll(w.Body)
 
 	result := []Invoice{}
@@ -161,10 +161,10 @@ func TestGetInternalError(t *testing.T) {
 
 	getAll(ctx)
 
-	assert.Equal(t, w.Code, http.StatusInternalServerError)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	b, _ := ioutil.ReadAll(w.Body)
 
-	assert.Equal(t, string(b), `{"message":"internal server error"}`)
+	assert.Equal(t, `{"message":"internal server error"}`, string(b))
 }
 
 func TestCreateSuccesss(t *testing.T) {
@@ -193,7 +193,7 @@ func TestCreateSuccesss(t *testing.T) {
 
 	create(ctx)
 
-	assert.Equal(t, w.Code, http.StatusCreated)
+	assert.Equal(t, http.StatusCreated, w.Code)
 
 	b, _ := ioutil.ReadAll(w.Body)
 	result := Invoice{}
@@ -202,7 +202,7 @@ func TestCreateSuccesss(t *testing.T) {
 	assert.NoError(t, err)
 	invoicesInput.CreatedAt = mockDate
 	invoicesInput.UpdatedAt = mockDate
-	assert.Equal(t, result, invoicesInput)
+	assert.Equal(t, invoicesInput, result)
 }
 
 func TestCreateInvalidBody(t *testing.T) {
@@ -245,7 +245,7 @@ func TestCreateInvalidBody(t *testing.T) {
 		setBody(ctx, invoice)
 		create(ctx)
 
-		assert.Equal(t, w.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 
 		b, _ := ioutil.ReadAll(w.Body)
 		assert.Equal(t, tt.expected, string(b))
@@ -275,10 +275,10 @@ func TestCreateInternalError(t *testing.T) {
 
 	create(ctx)
 
-	assert.Equal(t, w.Code, http.StatusInternalServerError)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
 	b, _ := ioutil.ReadAll(w.Body)
-	assert.Equal(t, string(b), `{"message":"internal server error"}`)
+	assert.Equal(t, `{"message":"internal server error"}`, string(b))
 }
 
 func TestDeleteSuccesss(t *testing.T) {
@@ -296,17 +296,17 @@ func TestDeleteSuccesss(t *testing.T) {
 
 	delete(ctx)
 
-	assert.Equal(t, w.Code, http.StatusOK)
+	assert.Equal(t, http.StatusOK, w.Code)
 	b, _ := ioutil.ReadAll(w.Body)
 
-	assert.Equal(t, string(b), "")
+	assert.Equal(t, "", string(b))
 }
 
 func TestDeleteNotFound(t *testing.T) {
 
 	// mock
 	patchGuard := monkey.Patch(deleteInvocie, func(id string) error {
-		return nil
+		return fmt.Errorf("StatusCode: 404, Recorde not found")
 	})
 	defer patchGuard.Unpatch()
 
@@ -317,10 +317,10 @@ func TestDeleteNotFound(t *testing.T) {
 
 	delete(ctx)
 
-	assert.Equal(t, w.Code, http.StatusOK)
+	assert.Equal(t, http.StatusNotFound, w.Code)
 	b, _ := ioutil.ReadAll(w.Body)
 
-	assert.Equal(t, string(b), "")
+	assert.Equal(t, `{"message":"invoice not found"}`, string(b))
 }
 
 func TestDeleteInternalError(t *testing.T) {
@@ -338,10 +338,10 @@ func TestDeleteInternalError(t *testing.T) {
 
 	delete(ctx)
 
-	assert.Equal(t, w.Code, http.StatusInternalServerError)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	b, _ := ioutil.ReadAll(w.Body)
 
-	assert.Equal(t, string(b), `{"message":"internal server error"}`)
+	assert.Equal(t, `{"message":"internal server error"}`, string(b))
 }
 
 func TestUpdateInvalidBody(t *testing.T) {
@@ -377,9 +377,107 @@ func TestUpdateInvalidBody(t *testing.T) {
 		ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
 		put(ctx)
 
-		assert.Equal(t, w.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 
 		b, _ := ioutil.ReadAll(w.Body)
 		assert.Equal(t, tt.expected, string(b))
 	}
+}
+
+func TestUpdateSuccesss(t *testing.T) {
+	// mock
+	mockDate := time.Now().String()
+	patchGuard := monkey.Patch(updateInvoice, func(invoice *Invoice) error {
+		invoice.CreatedAt = mockDate
+		invoice.UpdatedAt = mockDate
+
+		return nil
+	})
+	defer patchGuard.Unpatch()
+
+	// input
+	invoicesInput := Invoice{
+		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
+		CompanyName: "Bank of America",
+		Description: "service of development of software",
+		Goods:       []Goods{},
+		Amount:      "100.00",
+	}
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	setBody(ctx, invoicesInput)
+	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
+
+	put(ctx)
+
+	assert.Equal(t, w.Code, http.StatusOK)
+
+	b, _ := ioutil.ReadAll(w.Body)
+	result := Invoice{}
+	err := json.Unmarshal(b, &result)
+
+	assert.NoError(t, err)
+	invoicesInput.CreatedAt = mockDate
+	invoicesInput.UpdatedAt = mockDate
+	invoicesInput.ID = "1"
+	assert.Equal(t, invoicesInput, result)
+}
+
+func TestUpdateInternalError(t *testing.T) {
+	// mock
+	patchGuard := monkey.Patch(updateInvoice, func(invoice *Invoice) error {
+		return fmt.Errorf("generic error")
+	})
+	defer patchGuard.Unpatch()
+
+	// input
+	invoicesInput := Invoice{
+		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
+		CompanyName: "Bank of America",
+		Description: "service of development of software",
+		Goods:       []Goods{},
+		Amount:      "100.00",
+	}
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	setBody(ctx, invoicesInput)
+	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
+
+	put(ctx)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+
+	b, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, `{"message":"internal server error"}`, string(b))
+}
+
+func TestUpdateNotFound(t *testing.T) {
+	// mock
+	patchGuard := monkey.Patch(updateInvoice, func(invoice *Invoice) error {
+		return fmt.Errorf("operation error DynamoDB: PutItem, https response error StatusCode: 400, RequestID: 08260742-be20-484d-a73b-46ab9e55b539, ConditionalCheckFailedException:")
+	})
+	defer patchGuard.Unpatch()
+
+	// input
+	invoicesInput := Invoice{
+		Address:     "Robert Robertson, 1234 NW Bobcat Lane, St. Robert, MO 65584-5678.",
+		CompanyName: "Bank of America",
+		Description: "service of development of software",
+		Goods:       []Goods{},
+		Amount:      "100.00",
+	}
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	setBody(ctx, invoicesInput)
+	ctx.Params = []gin.Param{{Key: "id", Value: "1"}}
+
+	put(ctx)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	b, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, `{"message":"invalid attribute receives"}`, string(b))
 }

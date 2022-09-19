@@ -1,7 +1,7 @@
 package invoice
 
 type Invoice struct {
-	ID          string  `json:"id"`
+	ID          string  `json:"id" dynamodbav:"Id"`
 	Address     string  `json:"address" binding:"required"`
 	CompanyName string  `json:"company_name" binding:"required"`
 	Description string  `json:"description" binding:"required"`
